@@ -20,12 +20,16 @@ function onSearchCountry() {
       } else if (data.length <= 2 && data.length > 10) {
         renderCountry(data);
         console.log(data.length);
-      } else getCountryes(searchValue);
-      console.log(data);
-      console.log(data.length);
+      } else if ((data.length = 1)) {
+        renderCountry(data);
+        console.log(data.length);
+        console.log(data);
+      } else if (!searchValue) {
+        Notify.info(
+          'Too many matches found. Please enter a more specific name.'
+        );
+      }
     })
-    .then(data2 => renderAllCountry(data2))
-
     .catch(error => console.error(error));
 }
 
@@ -40,19 +44,10 @@ const getCountryes = search => {
   );
 };
 
-// const renderCountry = function (data) {
-//   countryList.innerHTML = '';
-//   const html = `
-//    <div class="country">
-//    <img class="country__img" src="${data.flags.svg}" />
-//    <h3 class="country__name">${data.name.common}</h3>
-//    </div>`;
-
-//   countryList.insertAdjacentHTML('beforeend', html);
-// };
 
 function renderCountry(data) {
   countryList.innerHTML = '';
+  let markupAdd = '';
   const markup = data
     .map(({ flags, name }) => {
       return `
@@ -64,39 +59,12 @@ function renderCountry(data) {
     .join('');
 
   countryList.innerHTML = markup;
+
+  if (data.lenth === 1)
+    markupAdd = `<p>Capital: </p>
+ <p>Population: </p>
+<p>Languages: </p>`;
+  countryList.insertAdjacentHTML('beforeend', markupAdd);
 }
 
-function renderAllCountry() {
-  countryList.innerHTML = '';
-  const html = `
-   <div class="country">
-   <img class="country__img" src="" />
-   <h3 class="country__name"></h3>
-   </div>
-   <p>Capital: </p>
-   <p>Population: </p>
-   <p>Languages: </p>`;
 
-  countryList.insertAdjacentHTML('beforeend', html);
-}
-// function onSearchCountry(e) {
-//   const nameCountry = e.target.value;
-// }
-// // const tech = [
-// //   { name: 'alpha' },
-// //   { name: 'alpon' },
-// //   { name: 'salpon' },
-// //   { name: 'faraon' },
-// //   { name: 'daran' },
-// // ];
-// // function creatList(items) {
-// //   return items.map(item => `<li>${item.name}</li>`).join('');
-// // }
-
-// // function onSearchCountry(e) {
-// //   const filter = e.target.value.toLowerCase();
-// //   const filteredTtems = tech.filter(t => t.name.toLowerCase().includes(filter));
-
-// //   const listItemmarkup = creatList(filteredTtems);
-// //   console.log(listItemmarkup);
-// // }
