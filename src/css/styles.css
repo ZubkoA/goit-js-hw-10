@@ -30,3 +30,6 @@ body {
 .country__name {
   font-size: 16px;
 }
+.country-list {
+  opacity: 0;
+}

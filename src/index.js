@@ -11,25 +11,7 @@ searchBox.addEventListener('input', debounce(onSearchCountry, DEBOUNCE_DELAY));
 function onSearchCountry() {
   const searchValue = searchBox.value;
   getCountryes(searchValue)
-    .then(data => {
-      if (data.length > 10) {
-        console.log(data.length);
-        Notify.info(
-          'Too many matches found. Please enter a more specific name.'
-        );
-      } else if (data.length <= 2 && data.length > 10) {
-        renderCountry(data);
-        console.log(data.length);
-      } else if ((data.length = 1)) {
-        renderCountry(data);
-        console.log(data.length);
-        console.log(data);
-      } else if (!searchValue) {
-        Notify.info(
-          'Too many matches found. Please enter a more specific name.'
-        );
-      }
-    })
+    .then(data => renderCountry(data))
     .catch(error => console.error(error));
 }
 
@@ -44,11 +26,10 @@ const getCountryes = search => {
   );
 };
 
-
 function renderCountry(data) {
   countryList.innerHTML = '';
-  let markupAdd = '';
-  const markup = data
+  let markup;
+  markup = data
     .map(({ flags, name }) => {
       return `
    <div class="country">
@@ -60,11 +41,18 @@ function renderCountry(data) {
 
   countryList.innerHTML = markup;
 
-  if (data.lenth === 1)
-    markupAdd = `<p>Capital: </p>
- <p>Population: </p>
-<p>Languages: </p>`;
-  countryList.insertAdjacentHTML('beforeend', markupAdd);
+  if (data.length === 1) {
+    markup += `<p>Capital: ${data.capital}</p>
+   <p>Population: ${data.population}</p>
+  <p>Languages: ${data.languages}</p>`;
+    countryList.insertAdjacentHTML('beforeend', markup);
+    console.log(data.length);
+    console.log(data);
+  } else if (data.length < 10) {
+    countryList.style.opacity = 1;
+    console.log(data.length);
+  } else if (data.length > 10) {
+    console.log(data.length);
+    Notify.info('Too many matches found. Please enter a more specific name.');
+  }
 }
-
-
