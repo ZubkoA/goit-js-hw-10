@@ -1,5 +1,6 @@
 import './css/styles.css';
 import debounce from 'lodash.debounce';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 // import { getNews } from './fetchCountries';
 
 const countryList = document.querySelector('.country-list');
@@ -9,14 +10,26 @@ const DEBOUNCE_DELAY = 300;
 searchBox.addEventListener('input', debounce(onSearchCountry, DEBOUNCE_DELAY));
 function onSearchCountry() {
   const searchValue = searchBox.value;
-  getNews(searchValue)
+  getCountryes(searchValue)
     .then(data => {
-      renderCountry(data[0]);
+      if (data.length > 10) {
+        console.log(data.length);
+        Notify.info(
+          'Too many matches found. Please enter a more specific name.'
+        );
+      } else if (data.length <= 2 && data.length > 10) {
+        renderCountry(data);
+        console.log(data.length);
+      } else getCountryes(searchValue);
+      console.log(data);
+      console.log(data.length);
     })
+    .then(data2 => renderAllCountry(data2))
+
     .catch(error => console.error(error));
 }
 
-const getNews = search => {
+const getCountryes = search => {
   return fetch(`https://restcountries.com/v3.1/name/${search}`).then(
     response => {
       if (!response.ok) {
@@ -38,7 +51,7 @@ const getNews = search => {
 //   countryList.insertAdjacentHTML('beforeend', html);
 // };
 
-const renderCountry = function (data) {
+function renderCountry(data) {
   countryList.innerHTML = '';
   const markup = data
     .map(({ flags, name }) => {
@@ -51,8 +64,21 @@ const renderCountry = function (data) {
     .join('');
 
   countryList.innerHTML = markup;
-};
+}
 
+function renderAllCountry() {
+  countryList.innerHTML = '';
+  const html = `
+   <div class="country">
+   <img class="country__img" src="" />
+   <h3 class="country__name"></h3>
+   </div>
+   <p>Capital: </p>
+   <p>Population: </p>
+   <p>Languages: </p>`;
+
+  countryList.insertAdjacentHTML('beforeend', html);
+}
 // function onSearchCountry(e) {
 //   const nameCountry = e.target.value;
 // }
