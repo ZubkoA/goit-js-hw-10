@@ -4,6 +4,8 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 // import { getNews } from './fetchCountries';
 
 const countryList = document.querySelector('.country-list');
+const countryinfo = document.querySelector('.country-info');
+
 const searchBox = document.getElementById('search-box');
 const DEBOUNCE_DELAY = 300;
 
@@ -12,47 +14,56 @@ function onSearchCountry() {
   const searchValue = searchBox.value;
   getCountryes(searchValue)
     .then(data => renderCountry(data))
-    .catch(error => console.error(error));
+    .catch(error => {
+      console.error(error);
+      alert('Oops, there is no country with that name');
+    });
 }
 
 const getCountryes = search => {
-  return fetch(`https://restcountries.com/v3.1/name/${search}`).then(
-    response => {
-      if (!response.ok) {
-        throw new Error(response.status);
-      }
-      return response.json();
+  return fetch(
+    `https://restcountries.com/v3.1/name/${search}?fields=name,capital,population,flags,languages`
+  ).then(response => {
+    console.log(response);
+    if (!response.ok) {
+      throw new Error(response.status);
     }
-  );
+    return response.json();
+  });
 };
 
 function renderCountry(data) {
-  countryList.innerHTML = '';
-  let markup;
-  markup = data
-    .map(({ flags, name }) => {
-      return `
-   <div class="country">
-   <img class="country__img" src="${flags.svg}" />
-   <h3 class="country__name">${name.common}</h3>
-   </div>`;
-    })
-    .join('');
-
-  countryList.innerHTML = markup;
-
   if (data.length === 1) {
-    markup += `<p>Capital: ${data.capital}</p>
-   <p>Population: ${data.population}</p>
-  <p>Languages: ${data.languages}</p>`;
-    countryList.insertAdjacentHTML('beforeend', markup);
-    console.log(data.length);
-    console.log(data);
+    countryList.innerHTML = ' ';
+    let markup;
+    markup = data
+      .map(({ flags, name, capital, population, languages }) => {
+        return `
+   <div class="country">
+   <img class="country-img country-img_info" src="${flags.svg}" />
+   <h3 class="country-name country-name_info">${name.common}</h3>
+   </div>
+   <p><b>Capital:</b> ${capital}</p>
+   <p><b>Population:</b> ${population}</p>
+   <p><b>Languages:</b> ${Object.values(languages)}</p>`;
+      })
+      .join('');
+    countryinfo.innerHTML = markup;
   } else if (data.length < 10) {
-    countryList.style.opacity = 1;
-    console.log(data.length);
+    countryList.innerHTML = ' ';
+    countryinfo.innerHTML = ' ';
+    let markup;
+    markup = data
+      .map(({ flags, name }) => {
+        return `
+ <li class=country-lists><img class="country-img" src="${flags.svg}" />
+   <h3 class="country-name">${name.common}</h3></li>`;
+      })
+      .join('');
+
+    countryList.innerHTML = markup;
   } else if (data.length > 10) {
-    console.log(data.length);
+    countryList.innerHTML = ' ';
     Notify.info('Too many matches found. Please enter a more specific name.');
   }
 }
