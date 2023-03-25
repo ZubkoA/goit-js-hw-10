@@ -1,7 +1,7 @@
 import './css/styles.css';
 import debounce from 'lodash.debounce';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-// import { getNews } from './fetchCountries';
+import { fetchCountries } from './fetchCountries';
 
 const countryList = document.querySelector('.country-list');
 const countryinfo = document.querySelector('.country-info');
@@ -12,25 +12,14 @@ const DEBOUNCE_DELAY = 300;
 searchBox.addEventListener('input', debounce(onSearchCountry, DEBOUNCE_DELAY));
 function onSearchCountry() {
   const searchValue = searchBox.value;
-  getCountryes(searchValue)
+  fetchCountries(searchValue)
     .then(data => renderCountry(data))
-    .catch(error => {
-      console.error(error);
-      alert('Oops, there is no country with that name');
-    });
+    .catch(renderError);
 }
 
-const getCountryes = search => {
-  return fetch(
-    `https://restcountries.com/v3.1/name/${search}?fields=name,capital,population,flags,languages`
-  ).then(response => {
-    console.log(response);
-    if (!response.ok) {
-      throw new Error(response.status);
-    }
-    return response.json();
-  });
-};
+function renderError(error) {
+  Notify.failure('Oops, there is no country with that name');
+}
 
 function renderCountry(data) {
   if (data.length === 1) {
