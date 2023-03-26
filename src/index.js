@@ -10,9 +10,12 @@ const searchBox = document.getElementById('search-box');
 const DEBOUNCE_DELAY = 300;
 
 searchBox.addEventListener('input', debounce(onSearchCountry, DEBOUNCE_DELAY));
-function onSearchCountry() {
-  const searchValue = searchBox.value;
-  fetchCountries(searchValue)
+function onSearchCountry(e) {
+  e.preventDefault();
+  const getValue = searchBox.value.trim();
+  console.log(getValue);
+
+  fetchCountries(getValue)
     .then(data => renderCountry(data))
     .catch(renderError);
 }
