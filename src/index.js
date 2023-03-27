@@ -13,14 +13,9 @@ searchBox.addEventListener('input', debounce(onSearchCountry, DEBOUNCE_DELAY));
 function onSearchCountry(e) {
   e.preventDefault();
   const getValue = searchBox.value.trim();
-      if (getValue === '') {
-      return;
-    }
-    fetchCountries(getValue)
-      .then(data => renderCountry(data))
-      .catch(renderError);
+  if (getValue === '') {
+    return;
   }
-
   fetchCountries(getValue)
     .then(data => renderCountry(data))
     .catch(renderError);
